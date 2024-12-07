@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<!-- saved from url=(0033)file:///C:/Kaif/Prog/WEATHER.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        main {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        #currentWeatherBox, #weeklyReportBox {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        #currentWeatherBox {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e0f7fa;
+        }
+
+        #cityImage, #weatherIcon {
+            max-width: auto;
+            height: 100px;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+        #weatherIcon {
+            width: 120px;
+            height: 120px;
+        }
+
+        .info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .info img {
+            width: 30px;
+            height: 30px;
+            margin-right: 8px;
+        }
+
+        #weeklyReportBox {
+            background-color: #f0f4c3;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .forecast-day {
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .forecast-day img {
+            width: 50px;
+            height: 50px;
+        }
+
+        input {
+            padding: 12px;
+            border: 2px solid #fbc2eb;
+            border-radius: 5px;
+            width: calc(100% - 26px);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            background-color: #fbc2eb;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #e08fbe;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: #fbc2eb;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Weather App</h1>
+    </header>
+    <main>
+        <section>
+            <input type="text" id="city" placeholder="Enter city name" aria-label="City name">
+            <button id="getWeather">Get Weather</button>
+        </section>
+        <article id="currentWeatherBox">
+            <section>
+                <h2 id="weatherCity"></h2>
+                <p id="weatherDescription"></p>
+                <p id="weatherTemperature"></p>
+                <section class="info">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/humidity.png" alt="Humidity Icon">
+                    <p id="weatherHumidity"></p>
+                </section>
+                <section class="info">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/wind.png" alt="Wind Icon">
+                    <p id="weatherWind"></p>
+                </section>
+                <section class="info">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/barometer.png" alt="Pressure Icon">
+                    <p id="weatherPressure"></p>
+                </section>
+            </section>
+            <img id="cityImage" alt="City Image" hidden="">
+            <img id="weatherIcon" alt="Weather Icon" hidden="">
+        </article>
+        <article id="weeklyReportBox" hidden=""></article>
+    </main>
+    <footer>
+        <p>Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a></p>
+    </footer>
+    <script>
+        document.getElementById('getWeather').addEventListener('click', getWeather);
+
+        function getWeather() {
+            const city = document.getElementById('city').value;
+            const weatherApiKey = 'ce5d60cc0bbbb30ca7291f7e85361f85';
+            const imageApiKey = 'Lz75CgHk21HtdyRwb9OInMTXcgv4yPeWj_M1nH-WPbU';
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`;
+            const imageUrl = `https://api.unsplash.com/search/photos?query=${city}&client_id=${imageApiKey}`;
+
+            fetch(weatherUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('City not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const weatherCity = document.getElementById('weatherCity');
+                    const weatherDescription = document.getElementById('weatherDescription');
+                    const weatherTemperature = document.getElementById('weatherTemperature');
+                    const weatherHumidity = document.getElementById('weatherHumidity');
+                    const weatherWind = document.getElementById('weatherWind');
+                    const weatherPressure = document.getElementById('weatherPressure');
+                    const weatherIcon = document.getElementById('weatherIcon');
+
+                    weatherCity.textContent = data.name;
+                    weatherDescription.textContent = `Weather: ${data.weather[0].description}`;
+                    weatherTemperature.textContent = `Temperature: ${data.main.temp} °C`;
+                    weatherHumidity.textContent = `Humidity: ${data.main.humidity}%`;
+                    weatherWind.textContent = `Wind: ${data.wind.speed} m/s, Direction: ${data.wind.deg}°`;
+                    weatherPressure.textContent = `Pressure: ${data.main.pressure} hPa`;
+
+                    const iconCode = data.weather[0].icon;
+                    weatherIcon.src = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                    weatherIcon.hidden = false;
+
+                    return fetch(imageUrl);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const cityImage = document.getElementById('cityImage');
+                    if (data.results && data.results.length > 0) {
+                        cityImage.src = data.results[0].urls.regular;
+                        cityImage.hidden = false;
+                    } else {
+                        cityImage.hidden = true;
+                    }
+                })
+                .then(() => getWeeklyReport(city, weatherApiKey))
+                .catch(error => {
+                    console.error('Error:', error.message);
+                    document.getElementById('cityImage').hidden = true;
+                    document.getElementById('weatherIcon').hidden = true;
+                    document.getElementById('weeklyReportBox').hidden = true;
+                });
+        }
+
+        function getWeeklyReport(city, apiKey) {
+            const weeklyUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+            fetch(weeklyUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const weeklyReportBox = document.getElementById('weeklyReportBox');
+                    weeklyReportBox.innerHTML = '';
+                    let days = {};
+
+                    data.list.forEach(item => {
+                        const date = new Date(item.dt_txt).toLocaleDateString("en-US", {
+                            weekday: 'long',
+                            month: 'short',
+                            day: 'numeric'
+                        });
+                        if (!days[date]) {
+                            days[date] = {
+                                temp: item.main.temp,
+                                weather: item.weather[0].description,
+                                icon: item.weather[0].icon
+                            };
+                        }
+                    });
+
+                    Object.keys(days).forEach(day => {
+                        weeklyReportBox.innerHTML += `
+                            <article class="forecast-day">
+                                <h4>${day}</h4>
+                                <img src="http://openweathermap.org/img/wn/${days[day].icon}@2x.png" alt="Weather Icon">
+                                <p>${days[day].weather}</p>
+                                <p>${days[day].temp} °C</p>
+                            </article>
+                        `;
+                    });
+
+                    weeklyReportBox.hidden = false;
+                })
+                .catch(error => {
+                    console.error('Error fetching weekly forecast:', error);
+                });
+        }
+    </script>
+
+
+</body></html>
